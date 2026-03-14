@@ -1,0 +1,121 @@
+version: '3.8'
+
+# ╔═══════════════════════════════════════════════════════════════════╗
+# ║  Alpha Ultimate ERP v13 — Docker Compose Stack                   ║
+# ║  Complete development environment with PostgreSQL                ║
+# ║                                                                   ║
+# ║  Usage:                                                           ║
+# ║    docker-compose up -d       # Start all services               ║
+# ║    docker-compose down        # Stop all services                ║
+# ║    docker-compose logs -f     # View logs                        ║
+# ╚═══════════════════════════════════════════════════════════════════╝
+
+services:
+  # ── PostgreSQL Database ────────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: alpha-erp-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-alpha_erp_dev}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - alpha-network
+    restart: unless-stopped
+
+  # ── Express Backend Server ─────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: alpha-erp-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3000
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-alpha_erp_dev}?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-in-production}
+      VITE_USER: ${VITE_USER:-admin}
+      VITE_PASSWORD: ${VITE_PASSWORD:-Admin@12345}
+      VITE_CREATOR_USER: ${VITE_CREATOR_USER:-creator}
+      VITE_CREATOR_PASSWORD: ${VITE_CREATOR_PASSWORD:-Creator@12345}
+      CF_ACCOUNT_ID: ${CF_ACCOUNT_ID:-}
+      CF_ACCESS_KEY_ID: ${CF_ACCESS_KEY_ID:-}
+      CF_SECRET_ACCESS_KEY: ${CF_SECRET_ACCESS_KEY:-}
+      CF_R2_BUCKET: ${CF_R2_BUCKET:-}
+      CF_R2_PUBLIC_URL: ${CF_R2_PUBLIC_URL:-}
+      IMGBB_API_KEY: ${IMGBB_API_KEY:-}
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - alpha-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ── Redis Cache (Optional but Recommended) ──────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: alpha-erp-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - alpha-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Nginx Reverse Proxy (Optional) ─────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: alpha-erp-nginx
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    networks:
+      - alpha-network
+    restart: unless-stopped
+    profiles:
+      - with-nginx  # Only start with --profile with-nginx
+
+# ── Networks ───────────────────────────────────────────────────────
+networks:
+  alpha-network:
+    driver: bridge
+
+# ── Volumes ────────────────────────────────────────────────────────
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

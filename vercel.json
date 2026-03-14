@@ -1,0 +1,237 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/health",
+      "destination": "/api/index?r=health"
+    },
+    {
+      "source": "/api/migrate",
+      "destination": "/api/index?r=migrate"
+    },
+    {
+      "source": "/api/auth/login",
+      "destination": "/api/index?r=auth/login"
+    },
+    {
+      "source": "/api/auth/me",
+      "destination": "/api/index?r=auth/me"
+    },
+    {
+      "source": "/api/categories",
+      "destination": "/api/index?r=categories"
+    },
+    {
+      "source": "/api/users",
+      "destination": "/api/index?r=users"
+    },
+    {
+      "source": "/api/users/update",
+      "destination": "/api/index?r=users/update"
+    },
+    {
+      "source": "/api/users/delete",
+      "destination": "/api/index?r=users/delete"
+    },
+    {
+      "source": "/api/users/change-password",
+      "destination": "/api/index?r=users/change-password"
+    },
+    {
+      "source": "/api/permissions",
+      "destination": "/api/index?r=permissions"
+    },
+    {
+      "source": "/api/expenses",
+      "destination": "/api/index?r=expenses"
+    },
+    {
+      "source": "/api/expenses/approve",
+      "destination": "/api/index?r=expenses/approve"
+    },
+    {
+      "source": "/api/expenses/:id",
+      "destination": "/api/index?r=expenses/:id"
+    },
+    {
+      "source": "/api/invoices",
+      "destination": "/api/index?r=invoices"
+    },
+    {
+      "source": "/api/invoices/approve",
+      "destination": "/api/index?r=invoices/approve"
+    },
+    {
+      "source": "/api/invoices/:id",
+      "destination": "/api/index?r=invoices/:id"
+    },
+    {
+      "source": "/api/uploads/imgbb",
+      "destination": "/api/index?r=uploads/imgbb"
+    },
+    {
+      "source": "/api/assets",
+      "destination": "/api/index?r=assets"
+    },
+    {
+      "source": "/api/assets/update",
+      "destination": "/api/index?r=assets/update"
+    },
+    {
+      "source": "/api/investments",
+      "destination": "/api/index?r=investments"
+    },
+    {
+      "source": "/api/investments/update",
+      "destination": "/api/index?r=investments/update"
+    },
+    {
+      "source": "/api/liabilities",
+      "destination": "/api/index?r=liabilities"
+    },
+    {
+      "source": "/api/liabilities/update",
+      "destination": "/api/index?r=liabilities/update"
+    },
+    {
+      "source": "/api/budgets",
+      "destination": "/api/index?r=budgets"
+    },
+    {
+      "source": "/api/budgets/update",
+      "destination": "/api/index?r=budgets/update"
+    },
+    {
+      "source": "/api/workers",
+      "destination": "/api/index?r=workers"
+    },
+    {
+      "source": "/api/workers/update",
+      "destination": "/api/index?r=workers/update"
+    },
+    {
+      "source": "/api/salary",
+      "destination": "/api/index?r=salary"
+    },
+    {
+      "source": "/api/salary/pay",
+      "destination": "/api/index?r=salary/pay"
+    },
+    {
+      "source": "/api/attendance",
+      "destination": "/api/index?r=attendance"
+    },
+    {
+      "source": "/api/notifications",
+      "destination": "/api/index?r=notifications"
+    },
+    {
+      "source": "/api/notifications/read",
+      "destination": "/api/index?r=notifications/read"
+    },
+    {
+      "source": "/api/notifications/templates",
+      "destination": "/api/index?r=notifications/templates"
+    },
+    {
+      "source": "/api/notifications/whatsapp",
+      "destination": "/api/index?r=notifications/whatsapp"
+    },
+    {
+      "source": "/api/settings",
+      "destination": "/api/index?r=settings"
+    },
+    {
+      "source": "/api/forms",
+      "destination": "/api/index?r=forms"
+    },
+    {
+      "source": "/api/forms/update",
+      "destination": "/api/index?r=forms/update"
+    },
+    {
+      "source": "/api/reports/dashboard",
+      "destination": "/api/index?r=reports/dashboard"
+    },
+    {
+      "source": "/api/reports/wallet",
+      "destination": "/api/index?r=reports/wallet"
+    },
+    {
+      "source": "/api/reports/workers",
+      "destination": "/api/index?r=reports/workers"
+    },
+    {
+      "source": "/api/reports/salary-summary",
+      "destination": "/api/index?r=reports/salary-summary"
+    },
+    {
+      "source": "/api/audit-log",
+      "destination": "/api/index?r=audit-log"
+    },
+    {
+      "source": "/api/subscription",
+      "destination": "/api/index?r=subscription"
+    },
+    {
+      "source": "/api/creator/stats",
+      "destination": "/api/index?r=creator/stats"
+    },
+    {
+      "source": "/api/creator/ping",
+      "destination": "/api/index?r=creator/ping"
+    },
+    {
+      "source": "/api/creator/reset-password",
+      "destination": "/api/index?r=creator/reset-password"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type,Authorization"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ]
+}
